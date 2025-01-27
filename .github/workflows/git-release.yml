@@ -25,9 +25,6 @@ jobs:
       - name: Run Compile
         run: npm run compile
 
-      - name: List contents of out/compiled directory (for debugging)
-        run: ls -R out/compiled
-
       - name: Install vsce
         run: npm install -g @vscode/vsce
 
