@@ -1,14 +1,15 @@
 {
   "name": "validyml",
   "displayName": "validYML",
-  "description": "",
-  "version": "0.0.1",
+  "description": "ValidYML VSCode Extension is a powerful tool designed to enhance your YAML development experience by providing real-time validation, best practice enforcement, and automatic cleanup of configuration files directly within Visual Studio Code.",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.96.0"
   },
   "categories": [
     "Other",
-    "Linters"
+    "Linters",
+    "Programming Languages"
   ],
   "publisher": "Sonichigo",
   "icon": "media/logo.png",
@@ -20,9 +21,52 @@
   "sponsor": {
   "url": "https://github.com/sponsors/sonichigo"
   },
-  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+        "languages": [
+            {
+                "id": "yaml",
+                "aliases": [
+                    "YAML",
+                    "yaml"
+                ],
+                "extensions": [
+                    ".yml",
+                    ".yaml"
+                ],
+                "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "dockercompose",
+                "aliases": [
+                    "Docker Compose",
+                    "docker-compose"
+                ],
+                "extensions": [
+                    "docker-compose.yml",
+                    "docker-compose.yaml",
+                    "compose.yml",
+                    "compose.yaml"
+                ],
+                "configuration": "./language-configuration.json",
+                "filenamePatterns": [
+                    "docker-compose*.yml",
+                    "docker-compose*.yaml"
+                ]
+            }
+        ],
+        "grammars": [
+            {
+                "language": "yaml",
+                "scopeName": "source.yaml",
+                "path": "./syntaxes/yaml.tmLanguage.json"
+            },
+            {
+                "language": "dockercompose",
+                "scopeName": "source.docker-compose",
+                "path": "./syntaxes/docker-compose.tmLanguage.json"
+            }
+        ],
         "commands": [
             {
                 "command": "validyml.validateFile",
@@ -32,17 +76,7 @@
                 "command": "validyml.cleanFile",
                 "title": "ValidYML: Clean Current File"
             }
-        ],
-        "configuration": {
-            "title": "ValidYML",
-            "properties": {
-                "validyml.enableAutoValidation": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable automatic validation of Kubernetes YAML files"
-                }
-            }
-        }
+        ]
     },
   "dependencies": {
         "yaml": "^2.3.1"

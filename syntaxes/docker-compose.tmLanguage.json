@@ -1,0 +1,45 @@
+{
+    "name": "Docker Compose",
+    "scopeName": "source.docker-compose",
+    "fileTypes": ["docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"],
+    "patterns": [
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#property"
+        },
+        {
+            "include": "#string"
+        },
+        {
+            "include": "#compose-keywords"
+        }
+    ],
+    "repository": {
+        "comment": {
+            "match": "#.*$",
+            "name": "comment.line.number-sign.docker-compose"
+        },
+        "property": {
+            "match": "([A-Za-z0-9_-]+)\\s*:",
+            "captures": {
+                "1": {
+                    "name": "entity.name.tag.docker-compose"
+                }
+            }
+        },
+        "string": {
+            "patterns": [
+                {
+                    "match": "(['\"])(.*?)\\1",
+                    "name": "string.quoted.docker-compose"
+                }
+            ]
+        },
+        "compose-keywords": {
+            "match": "\\b(version|services|networks|volumes|build|image|ports|environment|deploy)\\b:",
+            "name": "keyword.control.docker-compose"
+        }
+    }
+}

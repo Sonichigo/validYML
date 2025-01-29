@@ -1,0 +1,38 @@
+{
+    "name": "YAML",
+    "scopeName": "source.yaml",
+    "fileTypes": [".yml", ".yaml"],
+    "patterns": [
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#property"
+        },
+        {
+            "include": "#string"
+        }
+    ],
+    "repository": {
+        "comment": {
+            "match": "#.*$",
+            "name": "comment.line.number-sign.yaml"
+        },
+        "property": {
+            "match": "([A-Za-z0-9_-]+)\\s*:",
+            "captures": {
+                "1": {
+                    "name": "entity.name.tag.yaml"
+                }
+            }
+        },
+        "string": {
+            "patterns": [
+                {
+                    "match": "(['\"])(.*?)\\1",
+                    "name": "string.quoted.yaml"
+                }
+            ]
+        }
+    }
+}

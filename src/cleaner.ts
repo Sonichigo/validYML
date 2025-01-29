@@ -1,4 +1,3 @@
-// src/cleaner.ts
 import * as yaml from 'yaml';
 
 export async function cleanK8sFile(content: string): Promise<string> {

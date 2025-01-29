@@ -1,7 +1,5 @@
-// src/extension.ts
 import * as vscode from 'vscode';
-import * as yaml from 'yaml';
-import { validateK8sFile } from './validator';
+import { validateFile } from './validator';
 import { cleanK8sFile } from './cleaner';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
@@ -9,8 +7,8 @@ let diagnosticCollection: vscode.DiagnosticCollection;
 export function activate(context: vscode.ExtensionContext) {
     console.log('ValidYML extension is now active');
 
-    // Create diagnostic collection for problems
-    diagnosticCollection = vscode.languages.createDiagnosticCollection('validyml');
+    // Create a diagnostic collection for each supported language
+    diagnosticCollection = vscode.languages.createDiagnosticCollection('Validyml');
     context.subscriptions.push(diagnosticCollection);
 
     // Register commands
@@ -24,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (vscode.workspace.getConfiguration('validyml').get('enableAutoValidation')) {
         context.subscriptions.push(
             vscode.workspace.onDidChangeTextDocument(event => {
-                if (event.document.languageId === 'yaml') {
+                if (isSupportedFile(event.document)) {
                     validateDocument(event.document);
                 }
             })
@@ -32,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         context.subscriptions.push(
             vscode.workspace.onDidOpenTextDocument(document => {
-                if (document.languageId === 'yaml') {
+                if (isSupportedFile(document)) {
                     validateDocument(document);
                 }
             })
@@ -40,11 +38,52 @@ export function activate(context: vscode.ExtensionContext) {
     }
 }
 
+function isSupportedFile(document: vscode.TextDocument): boolean {
+    return document.languageId === 'yaml' || document.languageId === 'dockercompose';
+}
+
+function isValidatableFile(document: vscode.TextDocument): boolean {
+    const fileName = document.fileName.toLowerCase();
+    return document.languageId === 'yaml' && (
+        fileName.includes('kubernetes') ||
+        fileName.includes('k8s') ||
+        fileName.endsWith('.yml') ||
+        fileName.endsWith('.yaml') ||
+        fileName.includes('docker-compose')
+    );
+}
+
 async function validateCurrentFile() {
     const editor = vscode.window.activeTextEditor;
-    if (editor) {
+    if (editor && isValidatableFile(editor.document)) {
         await validateDocument(editor.document);
         vscode.window.showInformationMessage('ValidYML: File validation complete');
+    }
+}
+
+async function validateDocument(document: vscode.TextDocument) {
+    try {
+        const issues = await validateFile(document);
+        
+        const diagnostics: vscode.Diagnostic[] = issues.map(issue => {
+            const range = new vscode.Range(
+                document.positionAt(issue.position.start),
+                document.positionAt(issue.position.end)
+            );
+            
+            const diagnostic = new vscode.Diagnostic(
+                range,
+                issue.message,
+                convertSeverity(issue.severity)
+            );
+            
+            diagnostic.source = 'validyml';
+            return diagnostic;
+        });
+
+        diagnosticCollection.set(document.uri, diagnostics);
+    } catch (error) {
+        console.error('Error validating document:', error);
     }
 }
 
@@ -68,33 +107,6 @@ async function cleanCurrentFile() {
         } catch (error) {
             vscode.window.showErrorMessage(`ValidYML: Error cleaning file - ${error}`);
         }
-    }
-}
-
-async function validateDocument(document: vscode.TextDocument) {
-    try {
-        const text = document.getText();
-        const issues = await validateK8sFile(text);
-        
-        const diagnostics: vscode.Diagnostic[] = issues.map(issue => {
-            const range = new vscode.Range(
-                document.positionAt(issue.position.start),
-                document.positionAt(issue.position.end)
-            );
-            
-            const diagnostic = new vscode.Diagnostic(
-                range,
-                issue.message,
-                convertSeverity(issue.severity)
-            );
-            
-            diagnostic.source = 'ValidKube';
-            return diagnostic;
-        });
-
-        diagnosticCollection.set(document.uri, diagnostics);
-    } catch (error) {
-        console.error('Error validating document:', error);
     }
 }
 
