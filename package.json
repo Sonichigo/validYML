@@ -2,7 +2,7 @@
   "name": "validyml",
   "displayName": "validYML",
   "description": "ValidYML VSCode Extension is a powerful tool designed to enhance your YAML development experience by providing real-time validation, best practice enforcement, and automatic cleanup of configuration files directly within Visual Studio Code.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -10,6 +10,10 @@
     "Other",
     "Linters",
     "Programming Languages"
+  ],
+  "keywords":[
+    "chat",
+    "coding"
   ],
   "publisher": "Sonichigo",
   "icon": "media/logo.png",
@@ -20,6 +24,10 @@
   },
   "sponsor": {
   "url": "https://github.com/sponsors/sonichigo"
+  },
+  "galleryBanner": {
+    "color": "#ffffff",
+    "theme": "light"
   },
   "main": "./dist/extension.js",
   "contributes": {
