@@ -78,6 +78,27 @@ function validateDockerCompose(doc: yaml.Document.Parsed, config: any, issues: V
         return;
     }
 
+    // Network validation
+    if (config.networks) {
+    Object.entries(config.networks).forEach(([networkName, network]: [string, any]) => {
+        // Check for common network misconfigurations
+        if (network.external === true && network.driver) {
+            issues.push(createIssue(doc, ['networks', networkName], 
+                `Network '${networkName}' is marked as external but has driver configuration`, 'warning'));
+        }
+        });
+    }
+
+    // Environment variable validation
+    if (service.environment) {
+        Object.entries(service.environment).forEach(([key, value]: [string, any]) => {
+            if (typeof value === 'string' && value.includes('${') && !value.includes('}')) {
+                issues.push(createIssue(doc, [...servicePath, 'environment', key], 
+                    `Environment variable '${key}' has malformed variable substitution`, 'error'));
+            }
+        });
+    }
+
     // Validate each service
     Object.entries(config.services).forEach(([serviceName, service]: [string, any]) => {
         const servicePath = ['services', serviceName];
