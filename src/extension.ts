@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { validateFile } from './validator';
 import { cleanK8sFile } from './cleaner';
+import { createDebouncer } from './debounce';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 
@@ -20,10 +21,16 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register event handlers
     if (vscode.workspace.getConfiguration('validyml').get('enableAutoValidation')) {
+        const debounce = createDebouncer(300);
+        context.subscriptions.push(debounce);
+        context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => {
+            debounce.cancel(document.uri.toString());
+            diagnosticCollection.delete(document.uri);
+        }));
         context.subscriptions.push(
             vscode.workspace.onDidChangeTextDocument(event => {
                 if (isSupportedFile(event.document)) {
-                    validateDocument(event.document);
+                    debounce.schedule(event.document.uri.toString(), () => validateDocument(event.document));
                 }
             })
         );

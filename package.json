@@ -108,7 +108,7 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "node --test tests/debounce.test.cjs tests/extension-debounce.test.cjs && vscode-test"
   },
   "devDependencies": {
     "@types/vscode": "^1.96.0",
