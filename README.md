@@ -1,52 +1,44 @@
 # ValidYML VSCode Extension
 
 ## Overview
-ValidYML VSCode Extension is a powerful tool designed to enhance your Kubernetes YAML development experience by providing real-time validation, best practice enforcement, and automatic cleanup of Kubernetes configuration files directly within Visual Studio Code.
+ValidYML is a VS Code extension that validates Kubernetes manifests, Docker Compose files, and MCP (Model Context Protocol) client configs as you edit them, and can clean up Kubernetes YAML in one command.
 
 ## Features
 
-### 1. Real-Time Kubernetes YAML Validation
-- Automatic validation as you type
-- Immediate feedback on errors and warnings
-- Checks for:
-  - Required fields (kind, apiVersion)
-  - Resource specifications
-  - Security best practices
-  - Common configuration mistakes
-
-### 2. Smart Cleaning and Formatting
-- One-click cleanup of Kubernetes YAML files
-- Removes redundant and default values
-- Eliminates empty/null fields
-- Consistent YAML formatting
-- Reduces file size and improves readability
-
-### 3. Security Checks
-- Identifies potential security risks
-- Warns about:
-  - Use of privileged containers
-  - Host network access
-  - Latest image tags
-  - Missing resource limits
-  - Unsafe configurations
-
-### 4. Best Practices Enforcement
-- Resource limits and requests validation
-- Namespace usage checks
-- Image tag validation
-- API version verification
-- Configuration optimization suggestions
-
-
-### 5. MCP Config Validation
-
-- Validates MCP (Model Context Protocol) client configs: `.mcp.json`, `mcp.json`, `claude_desktop_config.json`
+### 1. Kubernetes Validation
+- Required fields: `kind`, `apiVersion`, `metadata.name`
+- Containers and init containers in Pods and in templated workloads (Deployment, StatefulSet, DaemonSet, ReplicaSet, Job, CronJob)
+- Multi-document files (`---`-separated)
 - Checks:
-  * Transport shape (`command` for stdio, `url` for remote — exactly one)
-  * Deprecated `sse` transport (use Streamable HTTP)
-  * Hardcoded secrets in `env`
-  * Unpinned `npx`/`uvx` packages
-  * Remote servers over plain `http://`
+  - Untagged or `:latest` images (digest-pinned `@sha256:` images are accepted)
+  - Missing `resources.limits`
+  - `privileged` containers (error)
+  - Missing `readinessProbe` on Deployments and StatefulSets
+
+### 2. Docker Compose Validation
+- Detected by filename or by shape (a top-level `services:` mapping), including `compose.yaml` / `compose.yml`
+- Checks:
+  - Services need `image` or `build`
+  - Untagged or `:latest` images
+  - `privileged` services (error)
+  - Hardcoded secrets in `environment` (map and list forms) and malformed variable substitution
+  - Docker socket mounts and host bind mounts (named volumes are not flagged)
+  - Obsolete top-level `version` field
+  - External networks that also set a driver
+
+### 3. MCP Config Validation
+- Validates `.mcp.json`, `mcp.json`, `claude_desktop_config.json`, and any `*.mcp.json`
+- Checks:
+  - Transport shape: exactly one of `command` (stdio) or `url` (remote)
+  - Deprecated `sse` transport (use Streamable HTTP) and unknown transport types
+  - Hardcoded secrets in `env` (`${VAR}` references are fine)
+  - Unpinned `npx` / `uvx` / `pipx` packages
+  - Remote servers over plain `http://`
+
+### 4. Kubernetes YAML Cleaning
+- Removes null and empty values
+- Removes common defaults: `namespace: default`, `protocol: TCP` on Service ports, `imagePullPolicy: IfNotPresent`, and default termination message settings
+- Reformats consistently
 
 ## Installation
 
@@ -55,43 +47,37 @@ ValidYML VSCode Extension is a powerful tool designed to enhance your Kubernetes
 3. Search for "ValidYML"
 4. Click Install
 
-Or install from VS Code Marketplace: [ValidYML Extension](#)
+Or install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=Sonichigo.validyml).
 
 ## Usage
 
 ### Commands
 Access these commands through the Command Palette (Ctrl+Shift+P):
-- `validyml: Validate Current File` - Manually trigger validation
-- `validyml: Clean Current File` - Clean and format the current file
+- `ValidYML: Validate Current File` - Manually trigger validation
+- `ValidYML: Clean Current File` - Clean and format the current Kubernetes YAML file
 
-### Automatic Validation
-- Opens automatically for `.yaml` and `.yml` files
-- Shows problems in the Problems panel
-- Provides inline diagnostics and quick fixes
+Results appear in the Problems panel and as inline diagnostics.
 
-### Configuration
-In VS Code settings:
-```json
-{
-    "validyml.enableAutoValidation": true
-}
-```
+### Settings
+- `validyml.enableAutoValidation` (default `true`): validate files as they are opened or edited. Reload the window after changing it.
 
 ## Examples
 
 ### Validation Example
-Before:
 ```yaml
 apiVersion: v1
 kind: Pod
+metadata:
+  name: web
 spec:
   containers:
-  - image: nginx:latest
+  - name: web
+    image: nginx:latest
 ```
 
 Validation will show:
-- Warning: Container is missing resource limits/requests
-- Warning: Using latest tag is not recommended
+- Warning: Container 'web' uses an untagged or ':latest' image
+- Warning: Container 'web' has no resources.limits
 
 ### Cleaning Example
 Before:
@@ -115,32 +101,17 @@ kind: Service
 spec:
   ports:
   - port: 80
-  selector: {}
 ```
 
 ## Requirements
-- Visual Studio Code version 1.80.0 or higher
-- Kubernetes YAML files
-
-## Extension Settings
-This extension contributes the following settings:
-
-- `validyml.enableAutoValidation`: Enable/disable automatic validation
-- `validyml.validateOnSave`: Enable/disable validation on save
-- `validyml.severity.missingResources`: Set severity level for missing resources warning
+- Visual Studio Code 1.96.0 or higher
 
 ## Known Issues
-- Large YAML files might experience slight validation delays
-- Some advanced Kubernetes CRDs might not be fully supported
+- Cleaning is Kubernetes-oriented; don't run it on Compose or MCP files
+- Some advanced Kubernetes CRDs are only checked for the basic required fields
 
 ## Release Notes
-
-### 0.1.0
-Initial release of ValidYML VSCode Extension:
-- Basic YAML validation
-- File cleaning functionality
-- Security checks
-- Best practices enforcement
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing
 1. Fork the repository
