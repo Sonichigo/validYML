@@ -1,4 +1,8 @@
-## 0.1.0
+# Change Log
+
+All notable changes to the "validyml" extension are documented in this file.
+
+## [0.1.1] - 2026-10-28
 
 ### Added
 - **MCP config validation** — `.mcp.json`, `mcp.json`, `claude_desktop_config.json`, and any `*.mcp.json` file:
@@ -20,17 +24,37 @@
 - Compose files are now detected by shape (`services:` mapping), covering the modern default filenames `compose.yaml`/`compose.yml`
 - Named volumes (e.g. `pgdata:/var/lib/postgresql/data`) are no longer flagged as host mounts; only genuine host bind mounts are reported, with a dedicated warning for Docker-socket mounts
 - Top-level Compose `version` field is now reported as obsolete (Compose Specification) instead of being demanded
-- Missing `activationEvents` meant auto-validation never fired until a command was run manually
+- Missing `activationEvents` and an undeclared `validyml.enableAutoValidation` setting (read as undefined) meant auto-validation never fired until a command was run manually; the setting is now contributed with a default of `true`
 
 ### Changed
 - Validation core extracted into pure modules (`validator.ts`, `mcpValidator.ts`, `common.ts`) with no `vscode` dependency, enabling plain-Node testing
 
-# Change Log
+## [0.1.0] - 2025-04-15
 
-All notable changes to the "validyml" extension will be documented in this file.
+### Added
+- Docker Compose network validation: warns when a network is `external` but also sets a `driver`
+- Docker Compose environment variable validation: errors on malformed `${...}` substitution
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.0.3] - 2025-01-29
 
-## [Unreleased]
+### Added
+- Marketplace keywords and tags to improve discoverability
 
+## [0.0.2] - 2025-01-29
+
+### Added
+- Docker Compose support: `dockercompose` language with syntax highlighting for `docker-compose*.yml` / `compose.yml`
+- Docker Compose validation for services, images, resource limits, and host volume mounts
+- YAML syntax highlighting grammar and language configuration
+
+### Changed
+- Validation and extension activation reworked to handle YAML and Docker Compose files
+
+## [0.0.1] - 2025-01-27
+
+### Added
 - Initial release
+- Kubernetes YAML validation: required fields, `:latest` image tags, and missing resource limits
+- Command Palette commands: `ValidYML: Validate Current File` and `ValidYML: Clean Current File`
+- Clean command removes null/empty values and common Kubernetes defaults
+- Packaging and publish workflows
