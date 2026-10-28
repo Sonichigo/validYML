@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { validateFile } from './validator';
-import { cleanK8sFile } from './cleaner';
+import { cleanK8sFile, isKubernetesManifest } from './cleaner';
 
 let diagnosticCollection: vscode.DiagnosticCollection;
 
@@ -109,6 +109,12 @@ async function cleanCurrentFile() {
         try {
             const document = editor.document;
             const text = document.getText();
+            if (!isKubernetesManifest(text)) {
+                vscode.window.showWarningMessage(
+                    'ValidYML: Clean Current File only runs on Kubernetes manifests'
+                );
+                return;
+            }
             const cleaned = await cleanK8sFile(text);
             
             editor.edit(editBuilder => {
