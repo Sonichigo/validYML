@@ -39,17 +39,33 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function isSupportedFile(document: vscode.TextDocument): boolean {
-    return document.languageId === 'yaml' || document.languageId === 'dockercompose';
+    return (
+        document.languageId === 'yaml' ||
+        document.languageId === 'dockercompose' ||
+        isMcpConfigFile(document)
+    );
+}
+
+function isMcpConfigFile(document: vscode.TextDocument): boolean {
+    if (document.languageId !== 'json' && document.languageId !== 'jsonc') {
+        return false;
+    }
+    const base = document.fileName.toLowerCase().replace(/\\/g, '/').split('/').pop() ?? '';
+    return (
+        base === 'mcp.json' ||
+        base === '.mcp.json' ||
+        base === 'claude_desktop_config.json' ||
+        base.endsWith('.mcp.json')
+    );
 }
 
 function isValidatableFile(document: vscode.TextDocument): boolean {
     const fileName = document.fileName.toLowerCase();
-    return document.languageId === 'yaml' && (
-        fileName.includes('kubernetes') ||
-        fileName.includes('k8s') ||
-        fileName.endsWith('.yml') ||
-        fileName.endsWith('.yaml') ||
-        fileName.includes('docker-compose')
+    return (
+        isMcpConfigFile(document) ||
+        document.languageId === 'dockercompose' ||
+        (document.languageId === 'yaml' &&
+            (fileName.endsWith('.yml') || fileName.endsWith('.yaml')))
     );
 }
 

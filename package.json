@@ -2,7 +2,7 @@
   "name": "validyml",
   "displayName": "validYML",
   "description": "ValidYML VSCode Extension is a powerful tool designed to enhance your YAML development experience by providing real-time validation, best practice enforcement, and automatic cleanup of configuration files directly within Visual Studio Code.",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -11,7 +11,7 @@
     "Linters",
     "Programming Languages"
   ],
-  "keywords":[
+  "keywords": [
     "chat",
     "coding"
   ],
@@ -23,7 +23,7 @@
     "url": "https://github.com/sonichigo/validYML"
   },
   "sponsor": {
-  "url": "https://github.com/sponsors/sonichigo"
+    "url": "https://github.com/sponsors/sonichigo"
   },
   "galleryBanner": {
     "color": "#ffffff",
@@ -31,63 +31,63 @@
   },
   "main": "./dist/extension.js",
   "contributes": {
-        "languages": [
-            {
-                "id": "yaml",
-                "aliases": [
-                    "YAML",
-                    "yaml"
-                ],
-                "extensions": [
-                    ".yml",
-                    ".yaml"
-                ],
-                "configuration": "./language-configuration.json"
-            },
-            {
-                "id": "dockercompose",
-                "aliases": [
-                    "Docker Compose",
-                    "docker-compose"
-                ],
-                "extensions": [
-                    "docker-compose.yml",
-                    "docker-compose.yaml",
-                    "compose.yml",
-                    "compose.yaml"
-                ],
-                "configuration": "./language-configuration.json",
-                "filenamePatterns": [
-                    "docker-compose*.yml",
-                    "docker-compose*.yaml"
-                ]
-            }
+    "languages": [
+      {
+        "id": "yaml",
+        "aliases": [
+          "YAML",
+          "yaml"
         ],
-        "grammars": [
-            {
-                "language": "yaml",
-                "scopeName": "source.yaml",
-                "path": "./syntaxes/yaml.tmLanguage.json"
-            },
-            {
-                "language": "dockercompose",
-                "scopeName": "source.docker-compose",
-                "path": "./syntaxes/docker-compose.tmLanguage.json"
-            }
+        "extensions": [
+          ".yml",
+          ".yaml"
         ],
-        "commands": [
-            {
-                "command": "validyml.validateFile",
-                "title": "ValidYML: Validate Current File"
-            },
-            {
-                "command": "validyml.cleanFile",
-                "title": "ValidYML: Clean Current File"
-            }
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "dockercompose",
+        "aliases": [
+          "Docker Compose",
+          "docker-compose"
+        ],
+        "extensions": [
+          "docker-compose.yml",
+          "docker-compose.yaml",
+          "compose.yml",
+          "compose.yaml"
+        ],
+        "configuration": "./language-configuration.json",
+        "filenamePatterns": [
+          "docker-compose*.yml",
+          "docker-compose*.yaml"
         ]
-    },
+      }
+    ],
+    "grammars": [
+      {
+        "language": "yaml",
+        "scopeName": "source.yaml",
+        "path": "./syntaxes/yaml.tmLanguage.json"
+      },
+      {
+        "language": "dockercompose",
+        "scopeName": "source.docker-compose",
+        "path": "./syntaxes/docker-compose.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "validyml.validateFile",
+        "title": "ValidYML: Validate Current File"
+      },
+      {
+        "command": "validyml.cleanFile",
+        "title": "ValidYML: Clean Current File"
+      }
+    ]
+  },
   "dependencies": {
-        "yaml": "^2.3.1"
+    "yaml": "^2.3.1"
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -113,5 +113,11 @@
     "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1"
-  }
+  },
+  "activationEvents": [
+    "onLanguage:yaml",
+    "onLanguage:dockercompose",
+    "onLanguage:json",
+    "onLanguage:jsonc"
+  ]
 }

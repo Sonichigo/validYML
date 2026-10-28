@@ -37,6 +37,17 @@ ValidYML VSCode Extension is a powerful tool designed to enhance your Kubernetes
 - API version verification
 - Configuration optimization suggestions
 
+
+### 5. MCP Config Validation
+
+- Validates MCP (Model Context Protocol) client configs: `.mcp.json`, `mcp.json`, `claude_desktop_config.json`
+- Checks:
+  * Transport shape (`command` for stdio, `url` for remote — exactly one)
+  * Deprecated `sse` transport (use Streamable HTTP)
+  * Hardcoded secrets in `env`
+  * Unpinned `npx`/`uvx` packages
+  * Remote servers over plain `http://`
+
 ## Installation
 
 1. Open Visual Studio Code
@@ -139,7 +150,7 @@ Initial release of ValidYML VSCode Extension:
 5. Open a Pull Request
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the Apache-2.0 License - see the LICENSE file for details.
 
 ## Support
 For support, please open an issue in the GitHub repository or contact the maintainers.

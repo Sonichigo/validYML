@@ -14,8 +14,8 @@ jobs:
       tag: ${{ steps.setup-tag.outputs.tag }}
       version: ${{ steps.setup-tag.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ steps.node_version.outputs.nvmrc }}
 
@@ -37,7 +37,7 @@ jobs:
           VSIX_PACKAGE_PATH: ${{ steps.setup.outputs.packageName }}
         run: vsce package
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.setup.outputs.packageName }}
           path: ${{ steps.setup.outputs.packageName }}
@@ -61,11 +61,11 @@ jobs:
     needs: package
     if: startsWith(needs.package.outputs.tag, 'release/') && needs.package.outputs.tag != github.ref
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: ${{ needs.package.outputs.packageName }}
     
