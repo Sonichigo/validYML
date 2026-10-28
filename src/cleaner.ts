@@ -1,5 +1,36 @@
 import * as yaml from 'yaml';
 
+// Cleanup only makes sense for Kubernetes manifests: it removes defaults and
+// empty values that are meaningful in Compose files or .mcp.json.
+export function isKubernetesManifest(content: string): boolean {
+    let documents: yaml.Document.Parsed[];
+    try {
+        documents = yaml.parseAllDocuments(content);
+    } catch {
+        return false;
+    }
+
+    let sawManifest = false;
+    for (const doc of documents) {
+        if (doc.errors.length > 0) {
+            return false;
+        }
+        const parsed = doc.toJSON();
+        if (parsed === null || parsed === undefined) {
+            continue;
+        }
+        if (typeof parsed !== 'object' || Array.isArray(parsed)) {
+            return false;
+        }
+        const manifest = parsed as Record<string, unknown>;
+        if (typeof manifest.apiVersion !== 'string' || typeof manifest.kind !== 'string') {
+            return false;
+        }
+        sawManifest = true;
+    }
+    return sawManifest;
+}
+
 export async function cleanK8sFile(content: string): Promise<string> {
     try {
         const documents = yaml.parseAllDocuments(content);
