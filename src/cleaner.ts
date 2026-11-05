@@ -17,6 +17,13 @@ export function isKubernetesManifest(content: string): boolean {
         }
         const parsed = doc.toJSON();
         if (parsed === null || parsed === undefined) {
+            // A trailing empty document (`---` with nothing after it) is fine,
+            // but an explicit `null`/`~` document is content the cleaner would
+            // silently drop.
+            const source = (doc.contents as { source?: string } | null)?.source ?? '';
+            if (source.trim() !== '') {
+                return false;
+            }
             continue;
         }
         if (typeof parsed !== 'object' || Array.isArray(parsed)) {

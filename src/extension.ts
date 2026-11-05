@@ -65,6 +65,13 @@ function isMcpConfigFile(document: vscode.TextDocument): boolean {
     );
 }
 
+// Cleaning rewrites the buffer with YAML.stringify, so only plain YAML files
+// qualify. JSON configs (e.g. an MCP config) can contain string apiVersion and
+// kind members and must not be converted to YAML.
+function isYamlFile(document: vscode.TextDocument): boolean {
+    return document.languageId === 'yaml';
+}
+
 function isValidatableFile(document: vscode.TextDocument): boolean {
     const fileName = document.fileName.toLowerCase();
     return (
@@ -115,7 +122,7 @@ async function cleanCurrentFile() {
         try {
             const document = editor.document;
             const text = document.getText();
-            if (!isKubernetesManifest(text)) {
+            if (!isYamlFile(document) || !isKubernetesManifest(text)) {
                 vscode.window.showWarningMessage(
                     'ValidYML: Clean Current File only runs on Kubernetes manifests'
                 );
