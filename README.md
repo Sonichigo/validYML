@@ -121,7 +121,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 5. Open a Pull Request
 
 ## License
-This project is licensed under the Apache-2.0 License - see the LICENSE file for details.
+This project is licensed under the Apache-2.0 License - see the [LICENSE](./LICENSE) file for details.
 
 ## Support
 For support, please open an issue in the GitHub repository or contact the maintainers.
